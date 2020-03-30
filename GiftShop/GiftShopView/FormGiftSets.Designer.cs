@@ -100,6 +100,7 @@
             this.Controls.Add(this.dataGridView);
             this.Name = "FormGiftSets";
             this.Text = "Подарочные наборы";
+            this.Load += new System.EventHandler(this.FormComponents_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
             this.ResumeLayout(false);
 
