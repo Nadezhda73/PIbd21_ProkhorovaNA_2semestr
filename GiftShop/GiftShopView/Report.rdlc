@@ -7,20 +7,13 @@
         <DataProvider>System.Data.DataSet</DataProvider>
         <ConnectString>/* Local Connection */</ConnectString>
       </ConnectionProperties>
-      <rd:DataSourceID>da8473aa-1e26-4525-9691-9975de409b09</rd:DataSourceID>
-    </DataSource>
-    <DataSource Name="GiftShopBusinessLogicViewModels1">
-      <ConnectionProperties>
-        <DataProvider>System.Data.DataSet</DataProvider>
-        <ConnectString>/* Local Connection */</ConnectString>
-      </ConnectionProperties>
-      <rd:DataSourceID>dfcd1842-8e4a-4197-857d-b3472f8e9ef1</rd:DataSourceID>
+      <rd:DataSourceID>273efde0-92af-4898-a9c2-5d1954d8381e</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
     <DataSet Name="DataSetGiftSetMaterial">
       <Query>
-        <DataSourceName>GiftShopBusinessLogicViewModels1</DataSourceName>
+        <DataSourceName>GiftShopBusinessLogicViewModels</DataSourceName>
         <CommandText>/* Local Query */</CommandText>
       </Query>
       <Fields>
@@ -200,7 +193,7 @@
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="GiftSetName1">
+                        <Textbox Name="GiftSetName">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -214,7 +207,7 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>GiftSetName1</rd:DefaultName>
+                          <rd:DefaultName>GiftSetName</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -286,6 +279,7 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
