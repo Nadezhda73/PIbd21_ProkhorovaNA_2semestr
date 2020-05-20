@@ -11,27 +11,30 @@ namespace GiftShopBusinessLogic.BusinessLogics
 {
     public class ReportLogic
     {
+        private readonly IMaterialLogic materialLogic;
         private readonly IGiftSetLogic giftSetLogic;
         private readonly IOrderLogic orderLogic;
-        public ReportLogic(IGiftSetLogic giftSetLogic, IOrderLogic orderLLogic)
+
+        public ReportLogic(IGiftSetLogic giftSetLogic, IMaterialLogic materialLogic, IOrderLogic orderLogic)
         {
             this.giftSetLogic = giftSetLogic;
-            this.orderLogic = orderLLogic;
+            this.materialLogic = materialLogic;
+            this.orderLogic = orderLogic;
         }
 
         public List<ReportGiftSetMaterialViewModel> GetGiftSetMaterial()
         {
-            var giftSets = giftSetLogic.Read(null);
+            var GiftSets = giftSetLogic.Read(null);
             var list = new List<ReportGiftSetMaterialViewModel>();
-            foreach (var giftSet in giftSets)
+            foreach (var giftSet in GiftSets)
             {
-                foreach (var pc in giftSet.GiftSetMaterials)
+                foreach (var gm in giftSet.GiftSetMaterials)
                 {
                     var record = new ReportGiftSetMaterialViewModel
                     {
                         GiftSetName = giftSet.GiftSetName,
-                        MaterialName = pc.Value.Item1,
-                        Count = pc.Value.Item2
+                        MaterialName = gm.Value.Item1,
+                        Count = gm.Value.Item2
                     };
                     list.Add(record);
                 }
@@ -39,45 +42,23 @@ namespace GiftShopBusinessLogic.BusinessLogics
             return list;
         }
 
-        public List<(DateTime, List<ReportOrdersViewModel>)> GetOrders(ReportBindingModel model)
+        public List<IGrouping<DateTime, ReportOrdersViewModel>> GetOrders(ReportBindingModel model)
         {
-            List<(DateTime, List<ReportOrdersViewModel>)> list = new List<(DateTime, List<ReportOrdersViewModel>)>();
-            var orders = orderLogic.Read(new OrderBindingModel
+            return orderLogic.Read(new OrderBindingModel
             {
                 DateFrom = model.DateFrom,
                 DateTo = model.DateTo
             })
-             .Select(x => new ReportOrdersViewModel
-             {
-                 DateCreate = x.DateCreate,
-                 GiftSetName = x.GiftSetName,
-                 Count = x.Count,
-                 Sum = x.Sum,
-                 Status = x.Status
-             });
-            List<DateTime> dates = new List<DateTime>();
-            foreach (var order in orders)
+            .Select(x => new ReportOrdersViewModel
             {
-                if (!dates.Contains(order.DateCreate.Date))
-                {
-                    dates.Add(order.DateCreate.Date);
-                }
-            }
-            foreach (var date in dates)
-            {
-                (DateTime, List<ReportOrdersViewModel>) record;
-                record.Item2 = new List<ReportOrdersViewModel>();
-
-                record.Item1 = date;
-
-                foreach (var order in orders.Where(rec => rec.DateCreate.Date == date))
-                {
-                    record.Item2.Add(order);
-                }
-
-                list.Add(record);
-            }
-            return list;
+                DateCreate = x.DateCreate,
+                GiftSetName = x.GiftSetName,
+                Count = x.Count,
+                Sum = x.Sum,
+                Status = x.Status
+            })
+            .GroupBy(x => x.DateCreate.Date)
+           .ToList();
         }
 
         public void SaveGiftSetsToWordFile(ReportBindingModel model)
@@ -95,7 +76,7 @@ namespace GiftShopBusinessLogic.BusinessLogics
             SaveToExcel.CreateDoc(new ExcelInfo
             {
                 FileName = model.FileName,
-                Title = "Заказы",
+                Title = "Список заказов",
                 Orders = GetOrders(model)
             });
         }
@@ -106,7 +87,7 @@ namespace GiftShopBusinessLogic.BusinessLogics
             {
                 FileName = model.FileName,
                 Title = "Список подарочных наборов по материалам",
-                GiftSetMaterials = GetGiftSetMaterial()
+                GiftSetMaterials = GetGiftSetMaterial(),
             });
         }
     }

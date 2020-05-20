@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Unity;
 using GiftShopBusinessLogic.BusinessLogics;
 using GiftShopBusinessLogic.BindingModels;
+using GiftShopBusinessLogic.ViewModels;
 
 namespace GiftShopView
 {
@@ -23,25 +24,24 @@ namespace GiftShopView
             InitializeComponent();
             this.logic = logic;
         }
-
-        private void ButtonSaveToExcel_Click(object sender, EventArgs e)
+        private void buttonSaveToExcel_Click(object sender, EventArgs e)
         {
+            if (dateTimePickerFrom.Value.Date >= dateTimePickerTo.Value.Date)
+            {
+                MessageBox.Show("Дата начала должна быть меньше даты окончания", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             using (var dialog = new SaveFileDialog { Filter = "xlsx|*.xlsx" })
             {
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    if (dateTimePickerFrom.Value.Date >= dateTimePickerTo.Value.Date)
-                    {
-                        MessageBox.Show("Дата начала должна быть меньше даты окончания", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
                     try
                     {
                         logic.SaveOrdersToExcelFile(new ReportBindingModel
                         {
-                            FileName = dialog.FileName,
                             DateFrom = dateTimePickerFrom.Value.Date,
                             DateTo = dateTimePickerTo.Value.Date,
+                            FileName = dialog.FileName
                         });
                         MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
@@ -55,37 +55,40 @@ namespace GiftShopView
             }
         }
 
-        private void ButtonMake_Click(object sender, EventArgs e)
+        private void buttonCreate_Click(object sender, EventArgs e)
         {
             if (dateTimePickerFrom.Value.Date >= dateTimePickerTo.Value.Date)
             {
-                MessageBox.Show("Дата начала должна быть меньше даты окончания", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Дата начала должна быть меньше даты окончания",
+               "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
             try
             {
-                var dict = logic.GetOrders(new ReportBindingModel { DateFrom = dateTimePickerFrom.Value.Date, DateTo = dateTimePickerTo.Value.Date });
-                if (dict != null)
+                dataGridView.Rows.Clear();
+                var query = logic.GetOrders(new ReportBindingModel
                 {
-                    dataGridView.Rows.Clear();
-                    foreach (var date in dict)
+                    DateFrom = dateTimePickerFrom.Value.Date,
+                    DateTo = dateTimePickerTo.Value.Date
+                });
+                foreach (IGrouping<DateTime, ReportOrdersViewModel> group in query)
+                {
+                    dataGridView.Rows.Add(new object[] { group.Key.ToShortDateString(), "", "" });
+                    decimal total = 0;
+                    foreach (var model in group)
                     {
-                        decimal GenSum = 0;
-                        dataGridView.Rows.Add(new object[] { date.Item1.ToShortDateString() });
-
-                        foreach (var order in date.Item2)
-                        {
-                            dataGridView.Rows.Add(new object[] { "", order.GiftSetName, order.Sum });
-                            GenSum += order.Sum;
-                        }
-                        dataGridView.Rows.Add(new object[] { "General Sum:", "", GenSum });
+                        dataGridView.Rows.Add(new object[] { "", model.GiftSetName,
+                            model.Sum });
+                        total += model.Sum;
                     }
+                    dataGridView.Rows.Add(new object[] { "Итого", "", total });
+                    dataGridView.Rows.Add(new object[] { });
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK,
+               MessageBoxIcon.Error);
             }
         }
     }

@@ -28,7 +28,7 @@ namespace GiftShopBusinessLogic.BusinessLogics
             CreateRow(new PdfRowParameters
             {
                 Table = table,
-                Texts = new List<string> { "GiftSet", "Material", "Count" },
+                Texts = new List<string> { "Подарочный набор", "Материал", "Количество" },
                 Style = "NormalTitle",
                 ParagraphAlignment = ParagraphAlignment.Center
             });

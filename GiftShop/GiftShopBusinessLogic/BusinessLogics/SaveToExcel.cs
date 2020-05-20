@@ -11,28 +11,33 @@ using GiftShopBusinessLogic.HelperModels;
 
 namespace GiftShopBusinessLogic.BusinessLogics
 {
-    class SaveToExcel
+    static class SaveToExcel
     {
         public static void CreateDoc(ExcelInfo info)
         {
             using (SpreadsheetDocument spreadsheetDocument =
            SpreadsheetDocument.Create(info.FileName, SpreadsheetDocumentType.Workbook))
             {
+                // Создаем книгу (в ней хранятся листы)
                 WorkbookPart workbookpart = spreadsheetDocument.AddWorkbookPart();
                 workbookpart.Workbook = new Workbook();
                 CreateStyles(workbookpart);
+                // Получаем/создаем хранилище текстов для книги
                 SharedStringTablePart shareStringPart =
                spreadsheetDocument.WorkbookPart.GetPartsOfType<SharedStringTablePart>().Count() > 0
                 ?
                spreadsheetDocument.WorkbookPart.GetPartsOfType<SharedStringTablePart>().First()
                 :
                spreadsheetDocument.WorkbookPart.AddNewPart<SharedStringTablePart>();
+                // Создаем SharedStringTable, если его нет
                 if (shareStringPart.SharedStringTable == null)
                 {
                     shareStringPart.SharedStringTable = new SharedStringTable();
                 }
+                // Создаем лист в книгу
                 WorksheetPart worksheetPart = workbookpart.AddNewPart<WorksheetPart>();
                 worksheetPart.Worksheet = new Worksheet(new SheetData());
+                // Добавляем лист в книгу
                 Sheets sheets =
                spreadsheetDocument.WorkbookPart.Workbook.AppendChild<Sheets>(new Sheets());
                 Sheet sheet = new Sheet()
@@ -42,7 +47,6 @@ namespace GiftShopBusinessLogic.BusinessLogics
                     Name = "Лист"
                 };
                 sheets.Append(sheet);
-
                 InsertCellInWorksheet(new ExcelCellParameters
                 {
                     Worksheet = worksheetPart.Worksheet,
@@ -52,31 +56,54 @@ namespace GiftShopBusinessLogic.BusinessLogics
                     Text = info.Title,
                     StyleIndex = 2U
                 });
-
                 MergeCells(new ExcelMergeParameters
                 {
                     Worksheet = worksheetPart.Worksheet,
                     CellFromName = "A1",
                     CellToName = "C1"
                 });
-
-                uint rowIndex = 2;
-                foreach (var date in info.Orders)
+                InsertCellInWorksheet(new ExcelCellParameters
                 {
-                    decimal GenSum = 0;
-
+                    Worksheet = worksheetPart.Worksheet,
+                    ShareStringPart = shareStringPart,
+                    ColumnName = "A",
+                    RowIndex = 2,
+                    Text = "Дата",
+                    StyleIndex = 0U
+                });
+                InsertCellInWorksheet(new ExcelCellParameters
+                {
+                    Worksheet = worksheetPart.Worksheet,
+                    ShareStringPart = shareStringPart,
+                    ColumnName = "B",
+                    RowIndex = 2,
+                    Text = "Подарочный набор",
+                    StyleIndex = 0U
+                });
+                InsertCellInWorksheet(new ExcelCellParameters
+                {
+                    Worksheet = worksheetPart.Worksheet,
+                    ShareStringPart = shareStringPart,
+                    ColumnName = "C",
+                    RowIndex = 2,
+                    Text = "Сумма заказа",
+                    StyleIndex = 0U
+                });
+                uint rowIndex = 3;
+                foreach (var order in info.Orders)
+                {
                     InsertCellInWorksheet(new ExcelCellParameters
                     {
                         Worksheet = worksheetPart.Worksheet,
                         ShareStringPart = shareStringPart,
                         ColumnName = "A",
                         RowIndex = rowIndex,
-                        Text = date.Item1.ToShortDateString(),
+                        Text = order.Key.ToShortDateString(),
                         StyleIndex = 0U
                     });
                     rowIndex++;
-
-                    foreach (var order in date.Item2)
+                    decimal total = 0;
+                    foreach (var giftSet in order)
                     {
                         InsertCellInWorksheet(new ExcelCellParameters
                         {
@@ -84,40 +111,28 @@ namespace GiftShopBusinessLogic.BusinessLogics
                             ShareStringPart = shareStringPart,
                             ColumnName = "B",
                             RowIndex = rowIndex,
-                            Text = order.GiftSetName,
-                            StyleIndex = 1U
+                            Text = giftSet.GiftSetName,
+                            StyleIndex = 0U
                         });
-
                         InsertCellInWorksheet(new ExcelCellParameters
                         {
                             Worksheet = worksheetPart.Worksheet,
                             ShareStringPart = shareStringPart,
                             ColumnName = "C",
                             RowIndex = rowIndex,
-                            Text = order.Sum.ToString(),
-                            StyleIndex = 1U
+                            Text = giftSet.Sum.ToString(),
+                            StyleIndex = 0U
                         });
-                        GenSum += order.Sum;
+                        total += giftSet.Sum;
                         rowIndex++;
                     }
-
-                    InsertCellInWorksheet(new ExcelCellParameters
-                    {
-                        Worksheet = worksheetPart.Worksheet,
-                        ShareStringPart = shareStringPart,
-                        ColumnName = "A",
-                        RowIndex = rowIndex,
-                        Text = "General Sum:",
-                        StyleIndex = 0U
-                    });
-
                     InsertCellInWorksheet(new ExcelCellParameters
                     {
                         Worksheet = worksheetPart.Worksheet,
                         ShareStringPart = shareStringPart,
                         ColumnName = "C",
                         RowIndex = rowIndex,
-                        Text = GenSum.ToString(),
+                        Text = total.ToString(),
                         StyleIndex = 0U
                     });
                     rowIndex++;
@@ -325,6 +340,7 @@ namespace GiftShopBusinessLogic.BusinessLogics
         private static void InsertCellInWorksheet(ExcelCellParameters cellParameters)
         {
             SheetData sheetData = cellParameters.Worksheet.GetFirstChild<SheetData>();
+            // Ищем строку, либо добавляем ее
             Row row;
             if (sheetData.Elements<Row>().Where(r => r.RowIndex ==
            cellParameters.RowIndex).Count() != 0)
@@ -337,6 +353,7 @@ namespace GiftShopBusinessLogic.BusinessLogics
                 row = new Row() { RowIndex = cellParameters.RowIndex };
                 sheetData.Append(row);
             }
+            // Ищем нужную ячейку
             Cell cell;
             if (row.Elements<Cell>().Where(c => c.CellReference.Value ==
            cellParameters.CellReference).Count() > 0)
@@ -346,6 +363,8 @@ namespace GiftShopBusinessLogic.BusinessLogics
             }
             else
             {
+                // Все ячейки должны быть последовательно друг за другом расположены
+                // нужно определить, после какой вставлять
                 Cell refCell = null;
                 foreach (Cell rowCell in row.Elements<Cell>())
                 {
@@ -363,6 +382,7 @@ namespace GiftShopBusinessLogic.BusinessLogics
                 row.InsertBefore(newCell, refCell);
                 cell = newCell;
             }
+            // вставляем новый текст
             cellParameters.ShareStringPart.SharedStringTable.AppendChild(new
            SharedStringItem(new Text(cellParameters.Text)));
             cellParameters.ShareStringPart.SharedStringTable.Save();
