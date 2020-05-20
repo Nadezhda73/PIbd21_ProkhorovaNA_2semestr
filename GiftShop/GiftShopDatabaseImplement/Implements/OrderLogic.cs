@@ -61,18 +61,22 @@ namespace GiftShopDatabaseImplement.Implements
             using (var context = new GiftShopDatabase())
             {
                 return context.Orders
-                .Include(rec => rec.GiftSet)
-                .Where(rec => model == null || rec.Id == model.Id)
-                .Select(rec => new OrderViewModel
-                {
-                    Id = rec.Id,
-                    GiftSetName = rec.GiftSet.GiftSetName,
-                    Count = rec.Count,
-                    Sum = rec.Sum,
-                    Status = rec.Status,
-                    DateCreate = rec.DateCreate,
-                    DateImplement = rec.DateImplement
-                })
+                .Where(
+                        rec => model == null
+                        || (rec.Id == model.Id && model.Id.HasValue)
+                        || (model.DateFrom.HasValue && model.DateTo.HasValue && rec.DateCreate >= model.DateFrom && rec.DateCreate <= model.DateTo)
+                    )
+                    .Include(rec => rec.GiftSet)
+                    .Select(rec => new OrderViewModel
+                    {
+                        Id = rec.Id,
+                        GiftSetName = rec.GiftSet.GiftSetName,
+                        Count = rec.Count,
+                        Sum = rec.Sum,
+                        Status = rec.Status,
+                        DateCreate = rec.DateCreate,
+                        DateImplement = rec.DateImplement
+                    })
             .ToList();
             }
         }
