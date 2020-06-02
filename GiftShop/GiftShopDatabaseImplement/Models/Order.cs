@@ -10,6 +10,7 @@ namespace GiftShopDatabaseImplement.Models
     {
         public int Id { get; set; }
         public int GiftSetId { get; set; }
+        public int ClientId { get; set; }
         [Required]
         public int Count { get; set; }
         [Required]
@@ -20,5 +21,6 @@ namespace GiftShopDatabaseImplement.Models
         public DateTime DateCreate { get; set; }
         public DateTime? DateImplement { get; set; }
         public virtual GiftSet GiftSet { get; set; }
+        public Client Client { get; set; }
     }
 }

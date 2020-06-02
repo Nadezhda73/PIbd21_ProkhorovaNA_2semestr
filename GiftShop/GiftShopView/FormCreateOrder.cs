@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using GiftShopBusinessLogic.BindingModels;
+﻿using GiftShopBusinessLogic.BindingModels;
 using GiftShopBusinessLogic.BusinessLogics;
 using GiftShopBusinessLogic.Interfaces;
 using GiftShopBusinessLogic.ViewModels;
+using System;
+using System.Windows.Forms;
 using Unity;
 
 namespace GiftShopView
@@ -20,22 +13,39 @@ namespace GiftShopView
         [Dependency]
         public new IUnityContainer Container { get; set; }
         private readonly IGiftSetLogic logicP;
+        private readonly IClientLogic logicC;
         private readonly MainLogic logicM;
 
-        public FormCreateOrder(IGiftSetLogic logicP, MainLogic logicM)
+        public FormCreateOrder(IGiftSetLogic logicP, IClientLogic logicC, MainLogic logicM)
         {
             InitializeComponent();
             this.logicP = logicP;
+            this.logicC = logicC;
             this.logicM = logicM;
         }
         private void FormCreateOrder_Load(object sender, EventArgs e)
         {
             try
             {
-                var list = logicP.Read(null);
-                comboBoxGiftSet.DataSource = list;
-                comboBoxGiftSet.DisplayMember = "GiftSetName";
-                comboBoxGiftSet.ValueMember = "Id";
+                var listP = logicP.Read(null);
+
+                if (listP != null)
+                {
+                    comboBoxGiftSet.DisplayMember = "GiftSetName";
+                    comboBoxGiftSet.ValueMember = "Id";
+                    comboBoxGiftSet.DataSource = listP;
+                    comboBoxGiftSet.SelectedItem = null;
+                }
+
+                var listC = logicC.Read(null);
+
+                if (listC != null)
+                {
+                    comboBoxClient.DisplayMember = "ClientFIO";
+                    comboBoxClient.ValueMember = "Id";
+                    comboBoxClient.DataSource = listC;
+                    comboBoxClient.SelectedItem = null;
+                }
             }
             catch (Exception ex)
             {
@@ -66,8 +76,7 @@ namespace GiftShopView
                 }
             }
         }
-
-        private void buttonSave_Click(object sender, EventArgs e)
+        private void ButtonSave_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(textBoxCount.Text))
             {
@@ -81,11 +90,17 @@ namespace GiftShopView
                MessageBoxIcon.Error);
                 return;
             }
+            if (comboBoxClient.SelectedValue == null)
+            {
+                MessageBox.Show("Выберите клиента", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             try
             {
                 logicM.CreateOrder(new CreateOrderBindingModel
                 {
                     GiftSetId = Convert.ToInt32(comboBoxGiftSet.SelectedValue),
+                    ClientId = Convert.ToInt32(comboBoxClient.SelectedValue),
                     Count = Convert.ToInt32(textBoxCount.Text),
                     Sum = Convert.ToDecimal(textBoxSum.Text)
                 });
@@ -101,18 +116,19 @@ namespace GiftShopView
             }
         }
 
-        private void buttonCancel_Click(object sender, EventArgs e)
+        private void ButtonCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
             Close();
+
         }
 
-        private void textBoxCount_TextChanged(object sender, EventArgs e)
+        private void TextBoxCount_TextChanged(object sender, EventArgs e)
         {
             CalcSum();
         }
 
-        private void comboBoxGiftSet_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxGiftSet_SelectedIndexChanged(object sender, EventArgs e)
         {
             CalcSum();
         }

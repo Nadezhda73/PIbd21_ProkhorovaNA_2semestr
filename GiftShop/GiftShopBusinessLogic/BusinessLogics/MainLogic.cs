@@ -19,6 +19,7 @@ namespace GiftShopBusinessLogic.BusinessLogics
             orderLogic.CreateOrUpdate(new OrderBindingModel
             {
                 GiftSetId = model.GiftSetId,
+                ClientId = model.ClientId,
                 Count = model.Count,
                 Sum = model.Sum,
                 DateCreate = DateTime.Now,
@@ -42,11 +43,11 @@ namespace GiftShopBusinessLogic.BusinessLogics
             orderLogic.CreateOrUpdate(new OrderBindingModel
             {
                 Id = order.Id,
+                ClientId = order.ClientId,
                 GiftSetId = order.GiftSetId,
                 Count = order.Count,
                 Sum = order.Sum,
                 DateCreate = order.DateCreate,
-                DateImplement = DateTime.Now,
                 Status = OrderStatus.Выполняется
             });
         }
@@ -67,6 +68,7 @@ namespace GiftShopBusinessLogic.BusinessLogics
             orderLogic.CreateOrUpdate(new OrderBindingModel
             {
                 Id = order.Id,
+                ClientId = order.ClientId,
                 GiftSetId = order.GiftSetId,
                 Count = order.Count,
                 Sum = order.Sum,
@@ -92,6 +94,7 @@ namespace GiftShopBusinessLogic.BusinessLogics
             orderLogic.CreateOrUpdate(new OrderBindingModel
             {
                 Id = order.Id,
+                ClientId = order.ClientId,
                 GiftSetId = order.GiftSetId,
                 Count = order.Count,
                 Sum = order.Sum,
