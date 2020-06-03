@@ -61,6 +61,7 @@
             // buttonCreateOrder
             // 
             this.buttonCreateOrder.Location = new System.Drawing.Point(751, 28);
+            this.buttonRef.Margin = new System.Windows.Forms.Padding(4);
             this.buttonCreateOrder.Name = "buttonCreateOrder";
             this.buttonCreateOrder.Size = new System.Drawing.Size(142, 23);
             this.buttonCreateOrder.TabIndex = 1;
@@ -71,6 +72,7 @@
             // buttonTakeOrderInWork
             // 
             this.buttonTakeOrderInWork.Location = new System.Drawing.Point(751, 57);
+            this.buttonRef.Margin = new System.Windows.Forms.Padding(4);
             this.buttonTakeOrderInWork.Name = "buttonTakeOrderInWork";
             this.buttonTakeOrderInWork.Size = new System.Drawing.Size(142, 23);
             this.buttonTakeOrderInWork.TabIndex = 2;
@@ -81,6 +83,7 @@
             // buttonOrderReady
             // 
             this.buttonOrderReady.Location = new System.Drawing.Point(751, 86);
+            this.buttonRef.Margin = new System.Windows.Forms.Padding(4);
             this.buttonOrderReady.Name = "buttonOrderReady";
             this.buttonOrderReady.Size = new System.Drawing.Size(142, 23);
             this.buttonOrderReady.TabIndex = 3;
@@ -91,6 +94,7 @@
             // buttonPayOrder
             // 
             this.buttonPayOrder.Location = new System.Drawing.Point(751, 115);
+            this.buttonRef.Margin = new System.Windows.Forms.Padding(4);
             this.buttonPayOrder.Name = "buttonPayOrder";
             this.buttonPayOrder.Size = new System.Drawing.Size(142, 23);
             this.buttonPayOrder.TabIndex = 4;
@@ -101,6 +105,7 @@
             // buttonRef
             // 
             this.buttonRef.Location = new System.Drawing.Point(751, 144);
+            this.buttonRef.Margin = new System.Windows.Forms.Padding(4);
             this.buttonRef.Name = "buttonRef";
             this.buttonRef.Size = new System.Drawing.Size(142, 23);
             this.buttonRef.TabIndex = 5;
