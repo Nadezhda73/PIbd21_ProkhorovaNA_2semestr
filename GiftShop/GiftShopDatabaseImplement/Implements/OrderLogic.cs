@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using GiftShopBusinessLogic.BindingModels;
 using GiftShopBusinessLogic.Interfaces;
 using GiftShopBusinessLogic.ViewModels;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using GiftShopDatabaseImplement.Models;
+using System.Linq;
+using GiftShopBusinessLogic.Enums;
 
 namespace GiftShopDatabaseImplement.Implements
 {
@@ -31,8 +31,9 @@ namespace GiftShopDatabaseImplement.Implements
                     context.Orders.Add(element);
                 }
                 element.GiftSetId = model.GiftSetId == 0 ? element.GiftSetId : model.GiftSetId;
-                element.ClientId = model.ClientId == null ? element.ClientId : (int)model.ClientId;
+                element.ClientId = model.ClientId.Value;
                 element.Count = model.Count;
+                element.ImplementerId = model.ImplementerId;
                 element.Sum = model.Sum;
                 element.Status = model.Status;
                 element.DateCreate = model.DateCreate;
@@ -62,27 +63,31 @@ namespace GiftShopDatabaseImplement.Implements
             using (var context = new GiftShopDatabase())
             {
                 return context.Orders
-                .Where(
-                        rec => model == null
-                        || rec.Id == model.Id && model.Id.HasValue
-                        || model.DateFrom.HasValue && model.DateTo.HasValue && rec.DateCreate >= model.DateFrom && rec.DateCreate <= model.DateTo
-                        || model.ClientId.HasValue && model.ClientId == rec.ClientId
-                    )
-                    .Include(rec => rec.GiftSet)
-                    .Include(rec => rec.Client)
-                    .Select(rec => new OrderViewModel
-                    {
-                        Id = rec.Id,
-                        ClientId = rec.ClientId,
-                        GiftSetName = rec.GiftSet.GiftSetName,
-                        Count = rec.Count,
-                        Sum = rec.Sum,
-                        Status = rec.Status,
-                        DateCreate = rec.DateCreate,
-                        DateImplement = rec.DateImplement,
-                        ClientFIO = rec.Client.FIO
-                    })
-            .ToList();
+                .Where(rec => model == null || (rec.Id == model.Id && model.Id.HasValue) ||
+                (model.DateFrom.HasValue && model.DateTo.HasValue && rec.DateCreate >= model.DateFrom && rec.DateCreate <= model.DateTo) ||
+                (model.ClientId.HasValue && rec.ClientId == model.ClientId) ||
+                (model.FreeOrders.HasValue && model.FreeOrders.Value && !rec.ImplementerId.HasValue) ||
+                (model.ImplementerId.HasValue && rec.ImplementerId == model.ImplementerId && rec.Status == OrderStatus.Выполняется))
+                .Include(rec => rec.GiftSet)
+                .Include(rec => rec.Client)
+                .Include(rec => rec.Implementer)
+                .Select(rec => new OrderViewModel
+                {
+                    Id = rec.Id,
+                    ClientId = rec.ClientId,
+                    ImplementerId = rec.ImplementerId,
+                    GiftSetId = rec.GiftSetId,
+                    DateCreate = rec.DateCreate,
+                    DateImplement = rec.DateImplement,
+                    Status = rec.Status,
+                    Count = rec.Count,
+                    Sum = rec.Sum,
+                    GiftSetName = rec.GiftSet.GiftSetName,
+                    ClientFIO = rec.Client.FIO,
+                    ImplementerFIO = rec.ImplementerId.HasValue ? rec.Implementer.ImplementerFIO : string.Empty,
+
+                })
+                .ToList();
             }
         }
     }
