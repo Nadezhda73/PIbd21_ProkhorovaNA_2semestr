@@ -22,8 +22,7 @@ namespace GiftShopClientView
             {
                 comboBoxGiftSet.DisplayMember = "GiftSetName";
                 comboBoxGiftSet.ValueMember = "Id";
-                comboBoxGiftSet.DataSource =
-               APIClient.GetRequest<List<GiftSetViewModel>>("api/main/getgiftsetlist");
+                comboBoxGiftSet.DataSource = APIClient.GetRequest<List<GiftSetViewModel>>("api/main/getgiftsetlist");
                 comboBoxGiftSet.SelectedItem = null;
             }
             catch (Exception ex)
