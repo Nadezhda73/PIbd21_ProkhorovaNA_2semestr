@@ -3,10 +3,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GiftShopDatabaseImplement.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class lab5 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Clients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FIO = table.Column<string>(nullable: false),
+                    Email = table.Column<string>(nullable: false),
+                    Password = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Clients", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "GiftSets",
                 columns: table => new
@@ -41,6 +56,7 @@ namespace GiftShopDatabaseImplement.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     GiftSetId = table.Column<int>(nullable: false),
+                    ClientId = table.Column<int>(nullable: false),
                     Count = table.Column<int>(nullable: false),
                     Sum = table.Column<decimal>(nullable: false),
                     Status = table.Column<int>(nullable: false),
@@ -50,6 +66,12 @@ namespace GiftShopDatabaseImplement.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_Clients_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Clients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Orders_GiftSets_GiftSetId",
                         column: x => x.GiftSetId,
@@ -96,6 +118,11 @@ namespace GiftShopDatabaseImplement.Migrations
                 column: "MaterialId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_ClientId",
+                table: "Orders",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Orders_GiftSetId",
                 table: "Orders",
                 column: "GiftSetId");
@@ -111,6 +138,9 @@ namespace GiftShopDatabaseImplement.Migrations
 
             migrationBuilder.DropTable(
                 name: "Materials");
+
+            migrationBuilder.DropTable(
+                name: "Clients");
 
             migrationBuilder.DropTable(
                 name: "GiftSets");

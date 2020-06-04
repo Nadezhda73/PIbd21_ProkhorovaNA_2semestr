@@ -65,6 +65,7 @@ namespace GiftShopListImplement.Implements
             order.GiftSetId = model.GiftSetId;
             order.Count = model.Count;
             order.DateCreate = model.DateCreate;
+            order.ClientId = (int)model.ClientId;
             order.DateImplement = model.DateImplement;
             order.Sum = model.Sum;
             order.Status = model.Status;
@@ -78,15 +79,12 @@ namespace GiftShopListImplement.Implements
 
             foreach (var order in source.Orders)
             {
-                if (model != null)
+                if (model != null && order.Id == model.Id
+                    || model.DateFrom.HasValue && model.DateTo.HasValue && order.DateCreate >= model.DateFrom && order.DateCreate <= model.DateTo
+                    || model.ClientId.HasValue && order.ClientId == model.ClientId)
                 {
-                    if (order.Id == model.Id)
-                    {
-                        result.Add(CreateViewModel(order));
-                        break;
-                    }
-
-                    continue;
+                    result.Add(CreateViewModel(order));
+                    break;
                 }
 
                 result.Add(CreateViewModel(order));
@@ -115,6 +113,7 @@ namespace GiftShopListImplement.Implements
             return new OrderViewModel
             {
                 Id = order.Id,
+                ClientId = order.ClientId,
                 GiftSetId = order.GiftSetId,
                 GiftSetName = giftSetName,
                 Count = order.Count,
