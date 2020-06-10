@@ -25,19 +25,16 @@ namespace GiftShopRestApi.Controllers
             _main = main;
         }
         [HttpGet]
-        public List<GiftSetModel> GetGiftSetList() => _giftSet.Read(null)?.Select(rec =>
-       Convert(rec)).ToList();
+        public List<GiftSetModel> GetGiftSetList() => _giftSet.Read(null)?.Select(rec => Convert(rec)).ToList();
+
         [HttpGet]
-        public GiftSetModel GetGiftSet(int giftSetId) => Convert(_giftSet.Read(new
-       GiftSetBindingModel
-        { Id = giftSetId })?[0]);
+        public GiftSetModel GetGiftSet(int giftSetId) => Convert(_giftSet.Read(new GiftSetBindingModel { Id = giftSetId })?[0]);
+
         [HttpGet]
-        public List<OrderViewModel> GetOrders(int clientId) => _order.Read(new
-       OrderBindingModel
-        { ClientId = clientId });
+        public List<OrderViewModel> GetOrders(int clientId) => _order.Read(new OrderBindingModel { ClientId = clientId });
+
         [HttpPost]
-        public void CreateOrder(CreateOrderBindingModel model) =>
-       _main.CreateOrder(model);
+        public void CreateOrder(CreateOrderBindingModel model) => _main.CreateOrder(model);
         private GiftSetModel Convert(GiftSetViewModel model)
         {
             if (model == null) return null;

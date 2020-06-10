@@ -14,8 +14,7 @@ namespace GiftShopClientView
         {
             client.BaseAddress = new Uri(ConfigurationManager.AppSettings["IPAddress"]);
             client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new
-           MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
         public static T GetRequest<T>(string requestUrl)
         {
