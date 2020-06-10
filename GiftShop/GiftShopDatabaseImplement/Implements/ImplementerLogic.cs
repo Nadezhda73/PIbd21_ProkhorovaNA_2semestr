@@ -15,9 +15,21 @@ namespace GiftShopDatabaseImplement.Implements
         {
             using (var context = new GiftShopDatabase())
             {
-                Implementer element = context.Implementers.FirstOrDefault(rec => rec.Id == model.Id);
-
-                if (element == null)
+                Implementer element = context.Implementers.FirstOrDefault(rec =>
+                        rec.ImplementerFIO == model.ImplementerFIO && rec.Id != model.Id);
+                if (element != null)
+                {
+                    throw new Exception("Такой исполнитель уже существует");
+                }
+                if (model.Id.HasValue)
+                {
+                    element = context.Implementers.FirstOrDefault(rec => rec.Id == model.Id);
+                    if (element == null)
+                    {
+                        throw new Exception("Исполнитель не найден");
+                    }
+                }
+                else
                 {
                     element = new Implementer();
                     context.Implementers.Add(element);
