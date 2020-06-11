@@ -21,7 +21,6 @@ namespace GiftShopListImplement.Implements
         {
             Implementer tempImplementer = new Implementer { Id = 1 };
 
-
             foreach (var implementer in source.Implementers)
             {
                 if (implementer.ImplementerFIO == model.ImplementerFIO && implementer.Id != model.Id)
