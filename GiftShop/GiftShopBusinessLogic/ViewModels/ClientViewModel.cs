@@ -1,24 +1,29 @@
-﻿using System;
+﻿using GiftShopBusinessLogic.Attributes;
+using GiftShopBusinessLogic.Enums;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace GiftShopBusinessLogic.ViewModels
 {
     [DataContract]
-    public class ClientViewModel
+    public class ClientViewModel : BaseViewModel
     {
         [DataMember]
-        public int Id { get; set; }
-
+        [Column(title: "ФИО", gridViewAutoSize: GridViewAutoSize.Fill)]
+        public string ClientFIO { get; set; }
         [DataMember]
-        [DisplayName("ФИО")] public string ClientFIO { get; set; }
-
+        [Column(title: "Почта", width: 150)]
+        public string Email { get; set; }
         [DataMember]
-        [DisplayName("Логин")] public string Email { get; set; }
-
-        [DataMember]
-        [DisplayName("Пароль")] public string Password { get; set; }
+        public string Password { get; set; }
+        public override List<string> Properties() => new List<string>
+        {
+            "Id",
+            "FIO",
+            "Email"
+        };
     }
 }
