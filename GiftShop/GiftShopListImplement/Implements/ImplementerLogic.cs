@@ -20,6 +20,7 @@ namespace GiftShopListImplement.Implements
         public void CreateOrUpdate(ImplementerBindingModel model)
         {
             Implementer tempImplementer = new Implementer { Id = 1 };
+
             foreach (var implementer in source.Implementers)
             {
                 if (implementer.ImplementerFIO == model.ImplementerFIO && implementer.Id != model.Id)

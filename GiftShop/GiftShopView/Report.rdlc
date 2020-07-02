@@ -48,7 +48,7 @@
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>Подарочные наборы и материалам</Value>
+                    <Value>Подарочные наборы по материалам</Value>
                     <Style>
                       <FontSize>16pt</FontSize>
                       <FontWeight>Bold</FontWeight>
@@ -279,7 +279,6 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
@@ -306,7 +305,7 @@
             <DataSetName>DataSetGiftSetMaterial</DataSetName>
             <Top>1.39912cm</Top>
             <Height>2.6023cm</Height>
-            <Width>18.03768cm</Width>
+            <Width>18.03769cm</Width>
             <ZIndex>1</ZIndex>
             <Style>
               <Border>

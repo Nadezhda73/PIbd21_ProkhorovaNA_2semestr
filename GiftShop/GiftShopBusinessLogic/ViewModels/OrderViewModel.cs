@@ -4,46 +4,53 @@ using System.Text;
 using GiftShopBusinessLogic.Enums;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using GiftShopBusinessLogic.Attributes;
 
 namespace GiftShopBusinessLogic.ViewModels
 {
     [DataContract]
-    public class OrderViewModel
+    public class OrderViewModel : BaseViewModel
     {
         [DataMember]
-        public int Id { get; set; }
-
-        [DataMember]
         public int ClientId { get; set; }
-
-        [DataMember]
-        public int? ImplementerId { get; set; }
-
         [DataMember]
         public int GiftSetId { get; set; }
-
         [DataMember]
-        [DisplayName("Клиент")] public string ClientFIO { get; set; }
-
+        public int? ImplementerId { get; set; }
         [DataMember]
-        [DisplayName("Исполнитель")] public string ImplementerFIO { get; set; }
-
+        [Column(title: "Клиент", width: 150)]
+        public string ClientFIO { get; set; }
         [DataMember]
-        [DisplayName("Подарочный набор")] public string GiftSetName { get; set; }
-
+        [Column(title: "Исполнитель", width: 150)]
+        public string ImplementerFIO { get; set; }
         [DataMember]
-        [DisplayName("Количество")] public int Count { get; set; }
-
+        [Column(title: "Подарочный набор", width: 100)]
+        public string GiftSetName { get; set; }
         [DataMember]
-        [DisplayName("Сумма")] public decimal Sum { get; set; }
-
+        [Column(title: "Количество", width: 100)]
+        public int Count { get; set; }
         [DataMember]
-        [DisplayName("Статус")] public OrderStatus Status { get; set; }
-
+        [Column(title: "Сумма", width: 50)]
+        public decimal Sum { get; set; }
         [DataMember]
-        [DisplayName("Дата создания")] public DateTime DateCreate { get; set; }
-
+        [Column(title: "Статус", width: 100)]
+        public OrderStatus Status { get; set; }
         [DataMember]
-        [DisplayName("Дата выполнения")] public DateTime? DateImplement { get; set; }
+        [Column(title: "Дата создания", width: 100)]
+        public DateTime DateCreate { get; set; }
+        [DataMember]
+        [Column(title: "Дата выполнения", width: 100)]
+        public DateTime? DateImplement { get; set; }
+        public override List<string> Properties() => new List<string>
+        {
+            "Id",
+            "ClientFIO",
+            "GiftSetName",
+            "ImplementerFIO",
+            "Count",
+            "Sum",
+            "Status",
+            "DateCreate",
+            "DateImplement" };
     }
 }
